@@ -1,0 +1,31 @@
+{
+  "name": "cimplo-schedule",
+  "productName": "Cimplo",
+  "version": "1.0.0",
+  "description": "Cimplo project app.",
+  "main": "main.js",
+  "author": "Bas van Stein, LIACS",
+  "license": "MIT",
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.2.0",
+    "electron": "^2.0.5"
+  },
+  "scripts": {
+    "start": "electron .",
+    "start-mac": "/Applications/Electron.app/Contents/MacOS/Electron ."
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "bootstrap": "^4.0.0-beta.3",
+    "dhtmlx-gantt": "^5.2.0",
+    "dialogs": "^1.1.20",
+    "jquery": "^3.2.1",
+    "popper.js": "^1.12.9",
+    "tether": "^1.4.0"
+  },
+  "standard": {
+    "globals": [
+      "$"
+    ]
+  }
+}

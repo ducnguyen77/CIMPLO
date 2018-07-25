@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+    <script src="../node_modules/dhtmlx-gantt/codebase/sources/dhtmlxgantt.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../node_modules/dhtmlx-gantt/codebase/ext/dhtmlxgantt_marker.js"></script>
+
+    <script src="../node_modules/@fortawesome/fontawesome-free/js/all.min.js"></script>
+
+    <link rel="stylesheet" href="../node_modules/dhtmlx-gantt/codebase/dhtmlxgantt.css" type="text/css" charset="utf-8">
+
+    <link rel="stylesheet" href="dashboard.css">
+
+    <style type="text/css">
+        html, body{ height:100%; padding:0px; margin:0px; overflow-x: hidden;}
+    </style>
+
+    <title>Cimplo - Scheduler</title>
+  </head>
+  <body>
+    <header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#"><i class="far fa-calendar-alt"></i> Schedule</a>
+      <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="javascript:void(null);" onclick="dayview();">Day view <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(null);"" onclick="weekview();">Week view</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(null);" onclick="monthview();">Month view</a>
+          </li>
+         
+        </ul>
+        <form class="form-inline mt-2 mt-md-0">
+
+            <a class="nav-link" href="javascript:void(null);" onclick="reload();"><i class="fas fa-sync"></i></a>
+
+
+            <a class="nav-link" href="#">Settings</a>
+
+        </form>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container-fluid hidden">
+    <div class="row">
+    
+      <main role="main" class="col-sm-12 ml-sm-auto col-md-12 pt-3">
+        <h1>Overview</h1>
+        <div id="gantt_here" style='width:100%; height:800px'></div>
+        <script type="text/javascript">
+            gantt.config.readonly = true;
+            gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
+
+            var markerId = gantt.addMarker({
+                start_date: new Date(), //a Date object that sets the marker's date
+                css: "today", //a CSS class applied to the marker
+                text: "Now", //the marker title
+                title:  "Today"
+            });
+
+            gantt.init("gantt_here");
+            gantt.load("data.json");
+        </script>
+
+     </main>
+      
+    </div>
+  </div>
+  </body>
+  <script src="renderer.js"></script>
+</html>
