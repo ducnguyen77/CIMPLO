@@ -8,6 +8,6 @@ How to setup:
 - Clone repository
 - run `npm install`
 - make sure you have electron installed globally `npm install -g electron`
-- install electron-packager `npm install -g electron-pacakager`
+- install electron-packager `npm install -g electron-packager`
 - run `npm start`
 - pacakge `electron-packager .`
