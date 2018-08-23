@@ -8,17 +8,25 @@ const path = require('path')
 const config = require(path.join(__dirname, 'package.json'))
 const BrowserWindow = electron.BrowserWindow
 
+
+
 app.setName(config.productName)
 var mainWindow = null
 app.on('ready', function () {
   mainWindow = new BrowserWindow({
+    titleBarStyle: 'hidden',
+    width: 1281,
+    height: 800,
+    minWidth: 1281,
+    minHeight: 800,
     backgroundColor: 'lightgray',
     title: config.productName,
     show: false,
     webPreferences: {
       nodeIntegration: true,
       defaultEncoding: 'UTF-8'
-    }
+    },
+    icon: path.join(__dirname, 'icons/png/64.png')
   })
 
   mainWindow.loadURL(`file://${__dirname}/app/index.html`)
