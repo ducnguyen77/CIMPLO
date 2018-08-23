@@ -14,7 +14,7 @@ app.setName(config.productName)
 var mainWindow = null
 app.on('ready', function () {
   mainWindow = new BrowserWindow({
-    titleBarStyle: 'hidden',
+    //titleBarStyle: 'hidden',
     width: 1281,
     height: 800,
     minWidth: 1281,
