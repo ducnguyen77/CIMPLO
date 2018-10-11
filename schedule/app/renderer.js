@@ -5,9 +5,10 @@ window.Tether = require('tether')
 window.Bootstrap = require('bootstrap')
 window.Dialogs = require('dialogs')
 const {spawn} = require('child_process');
+const {dialog} = require('electron').remote;
 
 var loaded_data_id = 0;
-
+var selected_directory = "data";
 var myScatterChart;
 
 function init() {
@@ -15,16 +16,16 @@ function init() {
     myScatterChart = new dhtmlXChart({
         view: "scatter",
         container: "scatter_here",
-        value: "#risk#",
+        value: "#time#",
         xValue: "#cost#",
         yAxis: {
-            title: "risk"
+            title: "time"
         },
         xAxis: {
             title: "cost"
         },
         tooltip: {
-            template: "#risk# - #cost#"
+            template: "#id#: #time# - #cost#"
         },
         item: {
             radius: 5,
@@ -39,7 +40,7 @@ function init() {
         loadData(id);
         return true;
     })
-    myScatterChart.load("data/optimization_result.json", "json");
+    myScatterChart.load(selected_directory+"/optimization_result.json", "json");
 
     //load gannt
     gantt.config.readonly = true;
@@ -115,19 +116,29 @@ function optimizeView() {
 function loadData(id) {
     loaded_data_id = id;
     gantt.clearAll();
-    gantt.load("data/data" + loaded_data_id + ".json");
+    gantt.load(selected_directory+"/data" + loaded_data_id + ".json");
     dayview();
 }
 
 function reload() {
     gantt.clearAll();
-    gantt.load("data/data" + loaded_data_id + ".json");
-    myScatterChart.clearAll();
-    myScatterChart.load("data/optimization_result.json", "json");
-    var dialogs = Dialogs();
-    dialogs.alert('New data loaded.', function(ok) {
-        console.log('alert', ok)
-    })
+
+    dialog.showOpenDialog({
+        properties: ['openDirectory']
+    }, function (files) {
+        if (files !== undefined) {
+            // handle files
+            console.log(files[0]);
+            selected_directory = files[0];
+            gantt.load(files[0] + "/data" + loaded_data_id + ".json");
+            myScatterChart.clearAll();
+            myScatterChart.load(files[0] +"/optimization_result.json", "json");
+            var dialogs = Dialogs();
+            dialogs.alert('New data loaded.', function(ok) {
+                console.log('alert', ok)
+            })
+        }
+    });
 }
 
 var process_running = false;

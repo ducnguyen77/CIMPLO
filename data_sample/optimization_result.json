@@ -34,5 +34,5 @@
 {"id":"33",     "cost":9652.6,   "time": 105,   "demand":1},
 {"id":"34",     "cost":9701.4,   "time": 105,   "demand":0},
 {"id":"35",     "cost":24286.8,   "time": 104,   "demand":1},
-{"id":"36",     "cost":24379.6,   "time": 104,   "demand":0}
+{"id":"36",     "cost":24379.6,   "time": 104,   "demand":0},
 ]
