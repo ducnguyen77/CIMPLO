@@ -25,13 +25,21 @@ function init() {
             title: "cost"
         },
         tooltip: {
-            template: "#id#: #time# - #cost#"
+            template: "#id#: Time:#time# - Cost:#cost# - Defects:#defectnum#"
         },
         item: {
             radius: 5,
-            borderColor: "#f38f00",
+            borderColor: "#000000",
             borderWidth: 1,
-            color: "#ff9600",
+            color:function(obj){
+               if (obj.defectnum < 10) return "#00ff00";
+               if (obj.defectnum < 20) return "#44ff00";
+               if (obj.defectnum < 30) return "#88ff00";
+               if (obj.defectnum < 40) return "#aaaa00";
+               if (obj.defectnum < 50) return "#ff8800";
+               if (obj.defectnum < 60) return "#ff4400";
+               return "#ff0000";
+            },
             type: "d",
             shadow: true
         }
@@ -85,7 +93,7 @@ window.onresize = function(event) {
 };
 
 function dayview() {
-    $("#gantt_here").show();
+    $(".gantt").show();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "day";
     gantt.config.date_scale = "%d %M";
@@ -93,7 +101,7 @@ function dayview() {
 }
 
 function weekview() {
-    $("#gantt_here").show();
+    $(".gantt").show();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "week";
     gantt.config.date_scale = "Week #%W";
@@ -101,15 +109,23 @@ function weekview() {
 }
 
 function monthview() {
-    $("#gantt_here").show();
+    $(".gantt").show();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "month";
     gantt.config.date_scale = "%F, %Y";
     gantt.init("gantt_here");
 }
 
+function yearview() {
+    $(".gantt").show();
+    $("#optimizationView").hide();
+    gantt.config.scale_unit = "year";
+    gantt.config.date_scale = "%M, %Y";
+    gantt.init("gantt_here");
+}
+
 function optimizeView() {
-    $("#gantt_here").hide();
+    $(".gantt").hide();
     $("#optimizationView").show();
 }
 

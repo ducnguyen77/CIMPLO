@@ -36,16 +36,19 @@
         <ul class="navbar-nav mr-auto">
 
           <li class="nav-item active">
+          <li class="nav-item active">
+            <a class="nav-link" href="javascript:void(null);" onclick="analyseview();">Data analysis</a>
+          </li>
             <a class="nav-link" href="javascript:void(null);" onclick="optimizeView();">Optimization <span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item active">
+          <!--<li class="nav-item active">
             <a class="nav-link" href="javascript:void(null);" onclick="dayview();">Day view</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="javascript:void(null);"" onclick="weekview();">Week view</a>
-          </li>
+            <a class="nav-link" href="javascript:void(null);" onclick="weekview();">Week view</a>
+          </li>-->
           <li class="nav-item">
-            <a class="nav-link" href="javascript:void(null);" onclick="monthview();">Month view</a>
+            <a class="nav-link" href="javascript:void(null);" onclick="monthview();">Optimized schedule</a>
           </li>
          
         </ul>
@@ -66,10 +69,17 @@
     
       <main role="main" class="col-sm-12 ml-sm-auto col-md-12 pt-3">
         <h1>Overview</h1>
-        <div id="gantt_here" style='width:100%; height:800px; display:none;'></div>
+
+        <div id="gantt_options" class="gantt" style="display:none;">
+            <a href="javascript:void(null);" onclick="dayview();">Day</a> - 
+            <a href="javascript:void(null);" onclick="weekview();">Week</a> -
+            <a href="javascript:void(null);" onclick="monthview();">Month</a> - 
+            <a href="javascript:void(null);" onclick="yearview();">Year</a>
+        </div>
+        <div id="gantt_here" class="gantt" style='width:100%; height:800px; display:none;'></div>
 
         <div id="optimizationView">
-          <div id="scatter_here" style="width:100%; height:400px; "></div>
+          <div id="scatter_here" style="width:100%; height:600px; "></div>
           <button id="runbutton" onclick="javascript:executeProcess();" class="btn btn-primary">(Re)start optimization</button>
         </div>
      </main>
