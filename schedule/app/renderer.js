@@ -49,7 +49,7 @@ function init() {
         loadData(id);
         return true;
     })
-    myScatterChart.load(selected_directory+"/optimization_result.json", "json");
+    //myScatterChart.load(selected_directory+"/optimization_result.json", "json");
 
     //load gannt
     gantt.config.readonly = true;
@@ -85,7 +85,7 @@ function init() {
     }, 1000 * 60);
 
     gantt.init("gantt_here");
-    reload();
+    setTimeout(function(){ reload(); }, 1000);
 }
 
 window.onresize = function(event) {
