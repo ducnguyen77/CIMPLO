@@ -10,6 +10,7 @@ const {dialog} = require('electron').remote;
 var loaded_data_id = 0;
 var selected_directory = "data";
 var myScatterChart;
+var server = null;
 
 function init() {
     //load the scatter data
@@ -84,16 +85,19 @@ function init() {
     }, 1000 * 60);
 
     gantt.init("gantt_here");
+    reload();
 }
 
 window.onresize = function(event) {
     var h = window.innerHeight;
     $("#gantt_here").height(h - 120 + "px");
+    $("#iframe").height(h - 120 + "px");
     console.log("resize");
 };
 
 function dayview() {
     $(".gantt").show();
+    $(".visualisation").hide();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "day";
     gantt.config.date_scale = "%d %M";
@@ -102,6 +106,7 @@ function dayview() {
 
 function weekview() {
     $(".gantt").show();
+    $(".visualisation").hide();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "week";
     gantt.config.date_scale = "Week #%W";
@@ -110,6 +115,7 @@ function weekview() {
 
 function monthview() {
     $(".gantt").show();
+    $(".visualisation").hide();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "month";
     gantt.config.date_scale = "%F, %Y";
@@ -118,6 +124,7 @@ function monthview() {
 
 function yearview() {
     $(".gantt").show();
+    $(".visualisation").hide();
     $("#optimizationView").hide();
     gantt.config.scale_unit = "year";
     gantt.config.date_scale = "%M, %Y";
@@ -126,7 +133,16 @@ function yearview() {
 
 function optimizeView() {
     $(".gantt").hide();
+    $(".visualisation").hide();
     $("#optimizationView").show();
+    $(window).trigger('resize');
+}
+
+function analyseView(){
+    $(".gantt").hide();
+    $("#optimizationView").hide();
+    $(".visualisation").show();
+    $(window).trigger('resize');
 }
 
 function loadData(id) {
@@ -145,14 +161,52 @@ function reload() {
         if (files !== undefined) {
             // handle files
             console.log(files[0]);
-            selected_directory = files[0];
-            gantt.load(files[0] + "/data" + loaded_data_id + ".json");
-            myScatterChart.clearAll();
-            myScatterChart.load(files[0] +"/optimization_result.json", "json");
-            var dialogs = Dialogs();
-            dialogs.alert('New data loaded.', function(ok) {
-                console.log('alert', ok)
-            })
+            selected_directory = files[0]+"/";
+            $.getJSON(selected_directory+"config.json", function(json) {
+                console.log(json); // this will show the info it in firebug console
+                //visualisation, optimization, project
+                $("#projectname").text(json.project);
+
+                if (json.serverScript){
+                    if (server != null){
+                        server.kill('SIGHUP');
+                        server = null;
+                    }
+                    console.log('sh '+selected_directory+json.serverScript);
+                    server = spawn('sh',[selected_directory+json.serverScript], {
+                        shell: true
+                    });
+                    $(".loader").show();
+                    $("#iframe").hide();
+                    setTimeout(function(){ $("#iframe").attr("src",json.serverOutput); }, 5000);
+                    document.getElementById('iframe').onload = function() {
+                      $(".loader").hide();
+                      $("#iframe").show();
+                    };
+                    analyseView();
+                    $(".analysis-menu").show();
+                }else if (json.visualisation != ""){
+                    $("#iframe").attr("src",selected_directory+json.visualisation);
+                    analyseView();
+                    $(".analysis-menu").show();
+                }else{
+                    $(".analysis-menu").hide();
+                }
+                if (json.optimization == "yes"){
+                    gantt.load(files[0] + "/data" + loaded_data_id + ".json");
+                    myScatterChart.clearAll();
+                    myScatterChart.load(selected_directory +"/optimization_result.json", "json");
+                    var dialogs = Dialogs();
+                    dialogs.alert('New data loaded.', function(ok) {
+                        console.log('alert', ok)
+                    })
+                    $(".optimization-menu").show();
+                    optimizeView();
+                }else{
+                    $(".optimization-menu").hide();
+                }
+            });
+            
         }
     });
 }

@@ -10,4 +10,4 @@ How to setup:
 - make sure you have electron installed globally `npm install -g electron`
 - install electron-packager `npm install -g electron-packager`
 - run `npm start`
-- pacakge `electron-packager .`
+- package `electron-packager .`
