@@ -49,7 +49,7 @@ function init() {
         loadData(id);
         return true;
     })
-    //myScatterChart.load(selected_directory+"/optimization_result.json", "json");
+    myScatterChart.load(selected_directory+"/optimization_result.json", "json");
 
     //load gannt
     gantt.config.readonly = true;
@@ -91,11 +91,13 @@ function init() {
 window.onresize = function(event) {
     var h = window.innerHeight;
     $("#gantt_here").height(h - 120 + "px");
-    $("#iframe").height(h - 120 + "px");
+    $("#iframe").height(h + "px");
     console.log("resize");
 };
 
 function dayview() {
+    $('.nav-item').removeClass("active");
+    $("#nav-item3").addClass("active");
     $(".gantt").show();
     $(".visualisation").hide();
     $("#optimizationView").hide();
@@ -105,6 +107,8 @@ function dayview() {
 }
 
 function weekview() {
+    $('.nav-item').removeClass("active");
+    $("#nav-item3").addClass("active");
     $(".gantt").show();
     $(".visualisation").hide();
     $("#optimizationView").hide();
@@ -114,6 +118,8 @@ function weekview() {
 }
 
 function monthview() {
+    $('.nav-item').removeClass("active");
+    $("#nav-item3").addClass("active");
     $(".gantt").show();
     $(".visualisation").hide();
     $("#optimizationView").hide();
@@ -123,6 +129,8 @@ function monthview() {
 }
 
 function yearview() {
+    $('.nav-item').removeClass("active");
+    $("#nav-item3").addClass("active");
     $(".gantt").show();
     $(".visualisation").hide();
     $("#optimizationView").hide();
@@ -132,6 +140,8 @@ function yearview() {
 }
 
 function optimizeView() {
+    $('.nav-item').removeClass("active");
+    $("#nav-item2").addClass("active");
     $(".gantt").hide();
     $(".visualisation").hide();
     $("#optimizationView").show();
@@ -139,6 +149,8 @@ function optimizeView() {
 }
 
 function analyseView(){
+    $('.nav-item').removeClass("active");
+    $("#nav-item1").addClass("active");
     $(".gantt").hide();
     $("#optimizationView").hide();
     $(".visualisation").show();
@@ -149,7 +161,7 @@ function loadData(id) {
     loaded_data_id = id;
     gantt.clearAll();
     gantt.load(selected_directory+"/data" + loaded_data_id + ".json");
-    dayview();
+    monthview();
 }
 
 function reload() {

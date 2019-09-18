@@ -36,10 +36,10 @@
         <ul class="navbar-nav mr-auto">
 
           
-          <li class="nav-item analysis-menu">
+          <li class="nav-item analysis-menu" id="nav-item1">
             <a class="nav-link" href="javascript:void(null);" onclick="analyseView();">Data analysis</a>
           </li>
-          <li class="nav-item active optimization-menu">
+          <li class="nav-item optimization-menu" id="nav-item2">
             <a class="nav-link" href="javascript:void(null);" onclick="optimizeView();">Optimization <span class="sr-only">(current)</span></a>
           </li>
           <!--<li class="nav-item active">
@@ -48,7 +48,7 @@
           <li class="nav-item">
             <a class="nav-link" href="javascript:void(null);" onclick="weekview();">Week view</a>
           </li>-->
-          <li class="nav-item optimization-menu">
+          <li class="nav-item optimization-menu" id="nav-item3">
             <a class="nav-link" href="javascript:void(null);" onclick="monthview();">Optimized schedule</a>
           </li>
          
@@ -69,15 +69,16 @@
     <div class="row">
     
       <main role="main" class="col-sm-12 ml-sm-auto col-md-12 pt-3">
-        <h1>Overview</h1>
-  
+        <br/>
 
         <center><h3 class="loader" style="display:none;">Loading data..</h3><div class="loader" id="loader" style="display:none;"></div></center>
-        <div class="visualisation" style="display:none;">
-          <iframe src="" style="width:100%;height:100%;border:0;" id="iframe">Loading..</iframe>
+        <div class="visualisation" style="display:none; margin-top:20px;">
+          <div class="iframe-container">
+            <iframe src="" id="iframe">Loading..</iframe>
+          </div>
         </div>
 
-        <div id="gantt_options" class="gantt" style="display:none;">
+        <div id="gantt_options" class="gantt" style="display:none; margin-top:20px;">
             <a href="javascript:void(null);" onclick="dayview();">Day</a> - 
             <a href="javascript:void(null);" onclick="weekview();">Week</a> -
             <a href="javascript:void(null);" onclick="monthview();">Month</a> - 
