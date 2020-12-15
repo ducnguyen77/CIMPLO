@@ -2,6 +2,7 @@
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
 _libgcc_mutex=0.1=main
+bayes-optim=0.1.3=pypi_0
 blas=1.0=mkl
 boruta_py=0.3=py_0
 ca-certificates=2020.12.8=h06a4308_0
@@ -67,6 +68,7 @@ scipy=1.5.2=py38h0b6359f_0
 setuptools=51.0.0=py38h06a4308_2
 sip=4.19.13=py38he6710b0_0
 six=1.15.0=py38h06a4308_0
+sklearn=0.0=pypi_0
 sqlite=3.33.0=h62c20be_0
 tabulate=0.8.7=py38_0
 threadpoolctl=2.1.0=pyh5ca1d4c_0

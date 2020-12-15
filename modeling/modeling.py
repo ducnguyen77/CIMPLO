@@ -21,29 +21,38 @@ from joblib import dump
 # modules MIP-EGO (actually it's the BO package from Hao's github)
 
 from boruta_feature_selection import boruta_feature_selection
-from BayesOpt import BO
-from BayesOpt.Surrogate import RandomForest
-from BayesOpt.SearchSpace import NominalSpace, OrdinalSpace
+from bayes_optim import BO, NominalSpace, OrdinalSpace
+from bayes_optim.Surrogate import RandomForest, GaussianProcess
+# from bayes_optim.SearchSpace import NominalSpace, OrdinalSpace
 
 
-def modeling(train, targets, cv, to_drop, **kwargs):
+def modeling(train, targets, **kwargs):
     """
     Training and performing hyperparmeter optimization
     by Bayesian Optimization. Currently only supporting
     Random Forests.
     TODO: Make the HO and train_seting more interactive
 
-    :param to_drop: Features to be dropped from learning such as unit numbers,
-    cycles, etc (list of string names)
     :param train: train set (pandas)
     :param targets: targets (labels) (np.arrays)
-    :param cv: CV count for hyperparameter optimization
-    :param kwargs: features_list= a list of features to use
+    :cv: CV count for hyperparameter optimization
+    :to_drop: Features to be dropped from learning such as unit numbers,
+     cycles, etc (list of string names)
+    :DoE_size: Initial design of experiment for the BO HO.
+    :max_FEs: maximum number of function evaluations of the BO HO
+    :features_list= a list of features to use, cv=
     :return: trained model and list of used features
     """
 
     start = time.time()
     features_list = kwargs.get('features_list', None)
+    to_drop = kwargs.get('to_drop', None)
+    cv = kwargs.get('cv', 10)
+    DoE_size = kwargs.get('DoE_size', 200)
+    max_FEs = kwargs.get('max_FEs', 20)
+
+    print(max_FEs)
+    print(to_drop)
 
     train_set = train.copy()
     train_set.drop(to_drop, axis=1, inplace=True)
@@ -65,8 +74,8 @@ def modeling(train, targets, cv, to_drop, **kwargs):
 
     df_eval = pd.DataFrame(columns=df_columns)
 
-    n_step = 1  # reduced from 200 to 20 for testing
-    n_init_sample = 2
+    # max_FEs = 3  # reduced from 200 to 20 for testing
+    # DoE_size = 2
 
     # Hyperparameter optimization
     # objective function
@@ -112,13 +121,12 @@ def modeling(train, targets, cv, to_drop, **kwargs):
     search_space = max_depth + n_estimators + bootstrap + max_features + min_samples_leaf + min_samples_split
     model = RandomForest(levels=search_space.levels)
 
-    opt = BO(search_space, obj_func, model, max_iter=n_step,
-             n_init_sample=n_init_sample,
+    opt = BO(search_space=search_space, obj_fun=obj_func, model=model, max_FEs=max_FEs,
+             DoE_size=DoE_size,
              n_point=1,
              n_job=1,
              minimize=False,
-             verbose=False,
-             optimizer='MIES')
+             verbose=False)
 
     opt.run()
     best_params_ = df_eval[df_columns[1:]][df_eval['acc'] == df_eval['acc'].max()][:1].to_dict('records')

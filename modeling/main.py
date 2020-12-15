@@ -15,6 +15,8 @@ if __name__ == '__main__':
     lookback = 25
 
     cv = 10
+    DoE_size = 3
+    max_FEs = 2
     to_drop = ['unit', 'cycles']  # not to be used during modeling
 
     with open('../sample_data_modeling/CMAPSS_1/features_list25_rep_1.pkl', 'rb') as f:
@@ -25,7 +27,8 @@ if __name__ == '__main__':
     print('Pre-processing Data')
     train, targets, test = preprocessing(train, test, lookback=lookback)
     print('Modeling')
-    # fitted_model, features_list = modeling(train, targets, cv=cv, to_drop=to_drop, features_list=features_list)
+    # fitted_model, features_list = modeling(train, targets, cv=cv, to_drop=to_drop, max_FEs=max_FEs, DoE_size=DoE_size,
+    #                                        features_list=features_list)
     # Note: Temporary
     fitted_model = load('../sample_data_modeling/CMAPSS_1/rf_all_set1_boruta_no_unit_no_cycles_25_rep_1.joblib')
 
