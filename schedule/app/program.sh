@@ -1,5 +1,4 @@
 #!/bin/bash
 #
-echo "hello"
-sleep 10
+java -jar ./optimizer-demo.jar $1 $2
 echo "done"
