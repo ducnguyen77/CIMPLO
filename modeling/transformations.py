@@ -10,7 +10,7 @@ def preprocessing(train, test, lookback):
     :param train: train set
     :param test: test set
     :param lookback: (int) how many time-steps before the failure
-                      should we label as faulty
+                      should we label the time-steps as faulty
     :return: transformed train and test sets and training labels
     """
 
