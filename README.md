@@ -9,9 +9,8 @@ How to setup:
 - `cd schedule`
 - run `npm install`
 - make sure you have electron installed globally `npm install -g electron`
-- install electron-packager `npm install -g electron-packager`
 - run `npm start`
-- package `electron-packager .`
+- package `npm run-script package-win`
 
 
 
