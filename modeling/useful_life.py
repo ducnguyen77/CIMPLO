@@ -3,12 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from tqdm import tqdm
-import json
+# import json
+import re
 
 
-def rul_distr(train, test, hi_tr, hi_te, viz=False):
+def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_components, viz=False):
     """
 
+    :param number_of_components: number of workshops (int)
+    :param number_of_workshops: number of components (int)
     :param train: train set (pandas)
     :param test: test set (pandas)
     :param hi_tr: HI of training units (dictionary. Keys:unit numbers,
@@ -43,13 +46,24 @@ def rul_distr(train, test, hi_tr, hi_te, viz=False):
         else:
             RUL_distr[u] = rul_pred
 
-    taskconfig = {'Due dates': [np.mean(RUL_distr[u]) for u in RUL_distr.keys()],
-                  'Standard deviation': [np.std(RUL_distr[u]) for u in RUL_distr.keys()]}
-    with open("./taskconfig.json", "w") as outfile:
-        json.dump(taskconfig, outfile)
+    # Writing to .txt file with a pre-defined structure (IMPORTANT)
+    means = [np.mean(RUL_distr[u]) for u in RUL_distr.keys()]
+    std = [np.std(RUL_distr[u]) for u in RUL_distr.keys()]
+    means_and_stds = means+std
+
+    means_and_stds = (re.sub(r'[][,]', '', str(means_and_stds))).split(' ')
+
+    with open('./taskconfig.txt', 'w') as f:
+        f.write(str(len(test.unit.unique()))+' '+str(number_of_components)+' '+str(number_of_workshops)+'\n')
+        f.write('Due dates \n')
+        for item in means_and_stds[:100]:
+            f.write("%s\n" % item)
+
+        f.write('Standard deviation \n')
+        for item in means_and_stds[100:]:
+            f.write("%s\n" % item)
 
     if viz:
-
         for test_unit in test.unit.unique():
             # plt.figure(figsize=(10, 10))
             fig, ax = plt.subplots()
