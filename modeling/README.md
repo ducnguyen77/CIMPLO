@@ -26,5 +26,9 @@ python main.py
 2) There is already a trained model and selected features given for a quick check (these are in the /sample_data_modeling/CMAPSS-1/).
    There is also a taskconfig.txt output that has been already created.
 
+===========================================================================================
+
+Requirements.txt : enviroment requirements
+
 
 
