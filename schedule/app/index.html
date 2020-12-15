@@ -13,6 +13,8 @@
 
     <script src="../node_modules/@fortawesome/fontawesome-free/js/all.min.js"></script>
 
+    <script src="os.js"></script>
+
     <link rel="stylesheet" href="../node_modules/dhtmlx-gantt/codebase/dhtmlxgantt.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="codebase/dhtmlxchart.css" type="text/css" charset="utf-8">
 
@@ -55,7 +57,7 @@
         </ul>
         <form class="form-inline mt-2 mt-md-0">
 
-            <a class="nav-link" href="javascript:void(null);" onclick="reload();">Open folder</a>
+            <a class="nav-link" href="javascript:void(null);" onclick="loadFolder();">Open folder</a>
 
 
             <a class="nav-link" href="#">Settings</a>
@@ -88,12 +90,19 @@
 
         <div id="optimizationView">
           <div id="scatter_here" style="width:100%; height:600px; "></div>
-          <button id="runbutton" onclick="javascript:executeProcess();" class="btn btn-primary">(Re)start optimization</button>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="budgetInput">Evaluation budget</label>
+              <input type="number" class="form-control" id="budgetInput" placeholder="Budget" value="1000">
+            </div>
+            <button id="runbutton" onclick="javascript:executeProcess();" class="btn btn-primary">(Re)start optimization</button>
+          </div>
         </div>
      </main>
       
     </div>
   </div>
   </body>
+  
   <script src="renderer.js"></script>
 </html>

@@ -5,12 +5,15 @@ window.Tether = require('tether')
 window.Bootstrap = require('bootstrap')
 window.Dialogs = require('dialogs')
 const {spawn} = require('child_process');
+const { platform } = require('os')
 const {dialog} = require('electron').remote;
 
-var loaded_data_id = 0;
+var loaded_data_id = 1;
 var selected_directory = "data";
 var myScatterChart;
 var server = null;
+var dialogs = Dialogs();
+var optimization_config = '';
 
 function init() {
     //load the scatter data
@@ -49,7 +52,7 @@ function init() {
         loadData(id);
         return true;
     })
-    myScatterChart.load(selected_directory+"/optimization_result.json", "json");
+    myScatterChart.load(selected_directory+DS+"optimization_result.json", "json");
 
     //load gannt
     gantt.config.readonly = true;
@@ -85,6 +88,7 @@ function init() {
     }, 1000 * 60);
 
     gantt.init("gantt_here");
+
     setTimeout(function(){ reload(); }, 1000);
 }
 
@@ -166,7 +170,51 @@ function loadData(id) {
 
 function reload() {
     gantt.clearAll();
+    //load config
+    $.getJSON("../config.json", function(json) {
+        console.log(json); // this will show the info it in firebug console
+        //visualisation, optimization, project
+        $("#projectname").text(json.project);
 
+        if (json.server_script){ //only support on linux/mac for now.
+            if (server != null){
+                server.kill('SIGHUP');
+                server = null;
+            }
+            console.log('sh '+json.server_script);
+            server = spawn('sh',[json.server_script], {
+                shell: true
+            });
+            $(".loader").show();
+            $("#iframe").hide();
+            setTimeout(function(){ $("#iframe").attr("src",json.server_output); }, 5000);
+            document.getElementById('iframe').onload = function() {
+              $(".loader").hide();
+              $("#iframe").show();
+            };
+            analyseView();
+            $(".analysis-menu").show();
+        }else if (json.visualisation != ""){
+            $("#iframe").attr("src",json.visualisation);
+            analyseView();
+            $(".analysis-menu").show();
+        }else{
+            $(".analysis-menu").hide();
+        }
+        if (json.optimization == "yes"){
+            optimization_config = json.optimization_config;
+            gantt.load(json.optimization_output +DS +"data" + loaded_data_id + ".json");
+            myScatterChart.clearAll();
+            myScatterChart.load(selected_directory +DS+"optimization_result.json", "json");
+            $(".optimization-menu").show();
+            optimizeView();
+        }else{
+            $(".optimization-menu").hide();
+        }
+    });
+}
+
+function loadFolder() {
     dialog.showOpenDialog({
         properties: ['openDirectory']
     }, function (files) {
@@ -179,18 +227,18 @@ function reload() {
                 //visualisation, optimization, project
                 $("#projectname").text(json.project);
 
-                if (json.serverScript){
+                if (json.server_script){
                     if (server != null){
                         server.kill('SIGHUP');
                         server = null;
                     }
-                    console.log('sh '+selected_directory+json.serverScript);
-                    server = spawn('sh',[selected_directory+json.serverScript], {
+                    console.log('sh '+selected_directory+json.server_script);
+                    server = spawn('sh',[selected_directory+json.server_script], {
                         shell: true
                     });
                     $(".loader").show();
                     $("#iframe").hide();
-                    setTimeout(function(){ $("#iframe").attr("src",json.serverOutput); }, 5000);
+                    setTimeout(function(){ $("#iframe").attr("src",json.server_output); }, 5000);
                     document.getElementById('iframe').onload = function() {
                       $(".loader").hide();
                       $("#iframe").show();
@@ -208,7 +256,7 @@ function reload() {
                     gantt.load(files[0] + "/data" + loaded_data_id + ".json");
                     myScatterChart.clearAll();
                     myScatterChart.load(selected_directory +"/optimization_result.json", "json");
-                    var dialogs = Dialogs();
+                    
                     dialogs.alert('New data loaded.', function(ok) {
                         console.log('alert', ok)
                     })
@@ -226,29 +274,56 @@ function reload() {
 var process_running = false;
 
 function executeProcess() {
+    var budget = $("#budgetInput").val();
     if (process_running == false) {
-        const ls = spawn('sh', ['./app/program.sh'], {
-            shell: true
-        });
-        process_running = true;
-
-        //<i class="fas fa-circle-notch fa-spin"></i>
-        $("#runbutton").html('<i class="fas fa-circle-notch fa-spin"></i> Running..');
-
-        ls.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-
-        ls.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
-        });
-
-        ls.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-            process_running = false;
-            $("#runbutton").html('(Re)start optimization');
-            reload();
-        });
+        if (currentPlatform == platforms.WINDOWS){
+            const ls = spawn(__dirname+DS+'program.bat', [__dirname, __dirname+DS+optimization_config, budget], {
+                shell: true
+            });
+            process_running = true;
+    
+            //<i class="fas fa-circle-notch fa-spin"></i>
+            $("#runbutton").html('<i class="fas fa-circle-notch fa-spin"></i> Optimization in progress..');
+    
+            ls.stdout.on('data', (data) => {
+                console.log(`stdout: ${data}`);
+            });
+    
+            ls.stderr.on('data', (data) => {
+                console.log(`stderr: ${data}`);
+            });
+    
+            ls.on('close', (code) => {
+                console.log(`child process exited with code ${code}`);
+                process_running = false;
+                $("#runbutton").html('(Re)start optimization');
+                reload();
+            });
+        } else {
+            const ls = spawn('sh', ['./app/program.sh', optimization_config, budget], {
+                shell: true
+            });
+            process_running = true;
+    
+            //<i class="fas fa-circle-notch fa-spin"></i>
+            $("#runbutton").html('<i class="fas fa-circle-notch fa-spin"></i> Optimization in progress..');
+    
+            ls.stdout.on('data', (data) => {
+                console.log(`stdout: ${data}`);
+            });
+    
+            ls.stderr.on('data', (data) => {
+                console.log(`stderr: ${data}`);
+            });
+    
+            ls.on('close', (code) => {
+                console.log(`child process exited with code ${code}`);
+                process_running = false;
+                $("#runbutton").html('(Re)start optimization');
+                reload();
+            });
+        }
+        
     } else {
         dialogs.alert('Optimization still running.', function(ok) {
             console.log('alert', ok)
