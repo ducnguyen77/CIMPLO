@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def load_data(t=1):
+def load_data(path):
     """
     This is just an example using the first dataset of
     CMAPSS.
@@ -10,11 +10,13 @@ def load_data(t=1):
     :return: train and test sets
     """
 
+    file_path_te, file_path_tr = path
+    print(file_path_tr)
     # Fetching data #
-    train = pd.read_csv('../sample_data_modeling/CMAPSS_1/train_FD00' + str(t) + '.csv', parse_dates=False,
+    train = pd.read_csv(file_path_tr, parse_dates=False,
                         delimiter=" ", decimal=".",
                         header=None)
-    test = pd.read_csv('../sample_data_modeling/CMAPSS_1/test_FD00' + str(t) + '.csv', parse_dates=False,
+    test = pd.read_csv(file_path_te, parse_dates=False,
                        delimiter=" ", decimal=".",
                        header=None)
 

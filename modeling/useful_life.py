@@ -5,9 +5,10 @@ import pandas as pd
 from tqdm import tqdm
 # import json
 import re
+import os
 
 
-def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_components, viz=False):
+def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_components, path):
     """
 
     :param number_of_components: number of workshops (int)
@@ -18,7 +19,7 @@ def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_componen
     values: list of HI values)
     :param hi_te: HI of test units (dictionary. dictionary. Keys:unit numbers,
     values: list of HI values)
-    :param viz: If visualization should take place (boolean) (default False)
+    :param path: path for output folder to save visualizations as .png
     :return: taskconfig.txt files
     """
     RUL_distr = {}
@@ -53,7 +54,7 @@ def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_componen
 
     means_and_stds = (re.sub(r'[][,]', '', str(means_and_stds))).split(' ')
 
-    with open('./taskconfig.txt', 'w') as f:
+    with open(str(path)+'/taskconfig.txt', 'w') as f:
         f.write(str(len(test.unit.unique()))+' '+str(number_of_components)+' '+str(number_of_workshops)+'\n')
         f.write('Due dates \n')
         for item in means_and_stds[:100]:
@@ -63,7 +64,7 @@ def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_componen
         for item in means_and_stds[100:]:
             f.write("%s\n" % item)
 
-    if viz:
+    if path:
         for test_unit in test.unit.unique():
             # plt.figure(figsize=(10, 10))
             fig, ax = plt.subplots()
@@ -82,6 +83,4 @@ def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_componen
             plt.ylabel('Frequency')
             plt.title(f'Predicted RUL distribution for unit {test_unit}')
             plt.legend()
-            plt.show()
-
-    return RUL_distr
+            plt.savefig(str(path)+'/rul_distribution_unit'+str(test_unit))

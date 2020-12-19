@@ -26,13 +26,14 @@ from bayes_optim.Surrogate import RandomForest, GaussianProcess
 # from bayes_optim.SearchSpace import NominalSpace, OrdinalSpace
 
 
-def modeling(train, targets, **kwargs):
+def modeling(train, targets, to_optimize, **kwargs):
     """
     Training and performing hyperparmeter optimization
     by Bayesian Optimization. Currently only supporting
     Random Forests.
     TODO: Make the HO and train_seting more interactive
 
+    :param to_optimize: perform or not HO (boolean)
     :param train: train set (pandas)
     :param targets: targets (labels) (np.arrays)
     :cv: CV count for hyperparameter optimization
@@ -55,7 +56,8 @@ def modeling(train, targets, **kwargs):
     print(to_drop)
 
     train_set = train.copy()
-    train_set.drop(to_drop, axis=1, inplace=True)
+    if to_drop:
+        train_set.drop(to_drop, axis=1, inplace=True)
 
     if features_list:
         print('Features selected by user')
@@ -79,8 +81,6 @@ def modeling(train, targets, **kwargs):
 
     # Hyperparameter optimization
     # objective function
-    print('Hyperparameter optimization')
-
     def obj_func(x):
 
         # logger.info('Started internal cross-validation')
@@ -128,11 +128,16 @@ def modeling(train, targets, **kwargs):
              minimize=False,
              verbose=False)
 
-    opt.run()
+    if to_optimize:
+        print('Hyperparameter optimization')
+        opt.run()
     best_params_ = df_eval[df_columns[1:]][df_eval['acc'] == df_eval['acc'].max()][:1].to_dict('records')
 
     # Training using the best parameters
-    rf = RandomForestClassifier(**best_params_[0])
+    if to_optimize:
+        rf = RandomForestClassifier(n_jobs=-1, **best_params_[0])
+    else:
+        rf = RandomForestClassifier(n_jobs=-1)
     rf.fit(train_set, targets)
 
     dump(rf, './rf_model.joblib')
