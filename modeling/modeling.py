@@ -52,11 +52,9 @@ def modeling(train, targets, to_optimize, **kwargs):
     DoE_size = kwargs.get('DoE_size', 200)
     max_FEs = kwargs.get('max_FEs', 20)
 
-    print(max_FEs)
-    print(to_drop)
-
     train_set = train.copy()
     if to_drop:
+        print(f'The following features will not be used in training: {to_drop}')
         train_set.drop(to_drop, axis=1, inplace=True)
 
     if features_list:
@@ -65,7 +63,7 @@ def modeling(train, targets, to_optimize, **kwargs):
         train_set = train_set.values
 
     else:
-        print('Feature Selection')
+        print('Feature Selection (this will take a while...)')
         train_set, features_list = boruta_feature_selection(train_set, targets)
 
         with open('./features_list.pkl', 'wb') as f:
@@ -75,9 +73,6 @@ def modeling(train, targets, to_optimize, **kwargs):
                   'min_samples_split']
 
     df_eval = pd.DataFrame(columns=df_columns)
-
-    # max_FEs = 3  # reduced from 200 to 20 for testing
-    # DoE_size = 2
 
     # Hyperparameter optimization
     # objective function
@@ -129,7 +124,7 @@ def modeling(train, targets, to_optimize, **kwargs):
              verbose=False)
 
     if to_optimize:
-        print('Hyperparameter optimization')
+        print(f'Hyperparameter optimization with {cv}-folds and {max_FEs} function evaluations')
         opt.run()
     best_params_ = df_eval[df_columns[1:]][df_eval['acc'] == df_eval['acc'].max()][:1].to_dict('records')
 
@@ -143,6 +138,6 @@ def modeling(train, targets, to_optimize, **kwargs):
     dump(rf, './rf_model.joblib')
     end = time.time()
 
-    print(f'----Duration of repetition is {(end - start) / 60} minutes')
+    print(f'----Duration of training is {(end - start) / 60} minutes')
 
     return rf, features_list

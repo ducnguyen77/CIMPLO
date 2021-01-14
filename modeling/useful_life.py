@@ -1,11 +1,11 @@
-import mass_ts as mts
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-from tqdm import tqdm
 # import json
 import re
-import os
+
+import mass_ts as mts
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
 
 def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_components, path):
@@ -65,7 +65,7 @@ def rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_componen
             f.write("%s\n" % item)
 
     if path:
-        for test_unit in test.unit.unique():
+        for test_unit in tqdm(test.unit.unique(), 'Finalizing results'):
             # plt.figure(figsize=(10, 10))
             fig, ax = plt.subplots()
             # bins = int(np.ceil((np.max(RUL_distr[test_unit]) - np.min(RUL_distr[test_unit]))/1))

@@ -6,17 +6,17 @@ def load_data(path):
     This is just an example using the first dataset of
     CMAPSS.
     TODO: Update this function to a more general file picker
-    :param t: dataset number
+    :param path: path to the datasets
     :return: train and test sets
     """
 
-    file_path_te, file_path_tr = path
-    print(file_path_tr)
+    # file_path_te, file_path_tr = path
+    # print(file_path_tr)
     # Fetching data #
-    train = pd.read_csv(file_path_tr, parse_dates=False,
+    train = pd.read_csv(str(path)+'/train_FD001.csv', parse_dates=False,
                         delimiter=" ", decimal=".",
                         header=None)
-    test = pd.read_csv(file_path_te, parse_dates=False,
+    test = pd.read_csv(str(path)+'/test_FD001.csv', parse_dates=False,
                        delimiter=" ", decimal=".",
                        header=None)
 
