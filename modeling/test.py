@@ -47,26 +47,10 @@ def main(workshops, components, lookback, path, out, model, drop, features, opti
     print(path)
 
     click.echo('Loading Data')
-    # root = tk.Tk()
-    # root.withdraw()
-    # path_data = filedialog.askopenfilenames(parent=root,
-    #                                      initialdir=os.getcwd(),
-    #                                      title="Please select two files.\n First file should be the train set"
-    #                                            "and second file the test set:")
 
     train, test = load_data(path)
     click.echo('Pre-processing Data')
     train, targets, test = preprocessing(train, test, lookback=lookback)
-
-    # drop = click.prompt('Drop certain columns from training [y/N]?', type=bool)
-    # # TODO: ask the user for multiple input
-    # to_drop = None
-    # if drop:
-    #     to_drop = []
-    #     while drop:
-    #         to_drop.append(click.prompt('Add feature to drop?'))
-    #         drop = click.prompt('Drop more [y/N]?', type=bool)
-    # #     # to_drop = ['unit', 'cycles']  # not to be used during modeling
 
     click.echo('Modeling')
     feature_list = None
@@ -75,41 +59,8 @@ def main(workshops, components, lookback, path, out, model, drop, features, opti
             with open(features, 'rb') as f:
                 feature_list = pkl.load(f)
         fitted_model = load(model)
-    # selected_features = click.prompt('List of features to use [y/N]?', type=bool)
-    #
-    # features_list = list(train.columns)
-    # if selected_features:
-    #     root = tk.Tk()
-    #     root.withdraw()
-    #     path_features = filedialog.askopenfilename(parent=root,
-    #                                             initialdir=os.getcwd(),
-    #                                             title='Enter file name of features:')
-    #     # file = click.prompt('Enter file name of features', type=str)
-    #     with open(path_features, 'rb') as f:
-    #         features_list = pkl.load(f)
-    #
-    # trained = click.prompt('Is there a trained model available already [y/N]?', type=bool)
 
-    # if not trained:
-    #     ho = click.prompt('Perform hyperparameter optimization?', default=True, type=bool)
-    #     if ho:
-    #         cv = click.prompt('Please enter a CV value', default=10, type=int)
-    #         DoE_size = click.prompt('Please enter the DoE size', default=20, type=int)
-    #         max_FEs = click.prompt('Please enter the maximum value of function evaluations', default=200, type=int)
-    #         print('Modeling')
-    #         fitted_model, features_list = modeling(train, targets, to_optimize=ho, cv=cv, to_drop=to_drop,
-    #                                                max_FEs=max_FEs, DoE_size=DoE_size, features_list=features_list)
-    #
-    #     else:
-    #         fitted_model, features_list = modeling(train, targets, to_optimize=ho, to_drop=to_drop,
-    #                                                features_list=features_list)
     else:
-        # root = tk.Tk()
-        # root.withdraw()
-        # path_trained = filedialog.askopenfilename(parent=root,
-        #                                         initialdir=os.getcwd(),
-        #                                         title="Select trained model")
-        # # file = click.prompt('Enter file name of trained model', type=str)
         if features:
             with open(features, 'rb') as f:
                 feature_list = pkl.load(f)
@@ -122,14 +73,6 @@ def main(workshops, components, lookback, path, out, model, drop, features, opti
     hi_tr, hi_te = construction(fitted_model, train, test, feature_list)
     click.echo('RUL distributions')
 
-    # # out_path = click.prompt('Set output path (current path is: '+str(os.getcwd()+')'), type=str)
-    # root = tk.Tk()
-    # root.withdraw()
-    # out_path = filedialog.askdirectory(parent=root,
-    #                                  initialdir=os.getcwd(),
-    #                                  title="Please select an output folder:")
-    # if not os.path.isdir(out_path):
-    #     os.makedirs(out_path)
     rul_distr(train, test, hi_tr, hi_te, number_of_workshops, number_of_components, out)
 
     click.echo('Process finished!')
