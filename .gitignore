@@ -9,3 +9,5 @@ schedule/Cimplo-darwin-x64
 
 /modeling/__pycache__/
 /modeling/build/
+
+/modeling/*.txt
