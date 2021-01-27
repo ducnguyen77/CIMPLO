@@ -15,6 +15,8 @@ var server = null;
 var dialogs = Dialogs();
 var optimization_config = '';
 
+var json_config = '';
+
 function init() {
     //load the scatter data
     myScatterChart = new dhtmlXChart({
@@ -132,32 +134,42 @@ function monthview() {
     gantt.init("gantt_here");
 }
 
-function yearview() {
+function resetView(){
     $('.nav-item').removeClass("active");
+    $(".gantt").hide();
+    $("#optimizationView").hide();
+    $(".visualisation").hide();
+    $(".modeling").hide();
+    $("#statusfooter").hide();
+}
+
+function yearview() {
+    resetView()
     $("#nav-item3").addClass("active");
     $(".gantt").show();
-    $(".visualisation").hide();
-    $("#optimizationView").hide();
     gantt.config.scale_unit = "year";
     gantt.config.date_scale = "%M, %Y";
     gantt.init("gantt_here");
 }
 
 function optimizeView() {
-    $('.nav-item').removeClass("active");
+    resetView()
     $("#nav-item2").addClass("active");
-    $(".gantt").hide();
-    $(".visualisation").hide();
     $("#optimizationView").show();
     $(window).trigger('resize');
 }
 
 function analyseView(){
-    $('.nav-item').removeClass("active");
+    resetView()
     $("#nav-item1").addClass("active");
-    $(".gantt").hide();
-    $("#optimizationView").hide();
     $(".visualisation").show();
+    $(window).trigger('resize');
+}
+
+function modelView(){
+    resetView()
+    $("#nav-model").addClass("active");
+    $(".modeling").show();
     $(window).trigger('resize');
 }
 
@@ -201,6 +213,7 @@ function reload() {
         }else{
             $(".analysis-menu").hide();
         }
+        json_config = json;
         if (json.optimization == "yes"){
             optimization_config = json.optimization_config;
             gantt.load(json.optimization_output +DS +"data" + loaded_data_id + ".json");
@@ -273,11 +286,14 @@ function loadFolder() {
 
 var process_running = false;
 
+/**
+ * Run the optimizer
+ */
 function executeProcess() {
     var budget = $("#budgetInput").val();
     if (process_running == false) {
         if (currentPlatform == platforms.WINDOWS){
-            const ls = spawn(__dirname+DS+'program.bat', [__dirname, __dirname+DS+optimization_config, budget], {
+            const ls = spawn(__dirname+DS+'run-optimizer.bat', [__dirname, __dirname+DS+optimization_config, budget], {
                 shell: true
             });
             process_running = true;
@@ -300,7 +316,7 @@ function executeProcess() {
                 reload();
             });
         } else {
-            const ls = spawn('sh', ['./app/program.sh', optimization_config, budget], {
+            const ls = spawn('sh', ['./app/run-optimizer.sh', optimization_config, budget], {
                 shell: true
             });
             process_running = true;
@@ -326,6 +342,97 @@ function executeProcess() {
         
     } else {
         dialogs.alert('Optimization still running.', function(ok) {
+            console.log('alert', ok)
+        });
+    }
+}
+
+/**
+ * Set progressbar.
+ * @param {string} msg Message with percentage in it
+ */
+function setProgress(msg){
+    var percentage = msg.match(/\d+\%/g);
+    if (percentage){
+        $("#progressbar").css("width", percentage[0]);
+    } else {
+        $("#progressbar").css("width", "0%");
+    }
+}
+
+var logger = document.getElementById('modeling_log');
+function logmsg(message) {
+    if (typeof message == 'object') {
+        logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(message) : message);
+    } else {
+        var percpos = message.indexOf("%");
+        if (percpos > 0){
+            logger.innerHTML = message.substr(0, percpos+1);
+        } else {
+            logger.innerHTML = message;
+        }
+        
+    }
+}
+var training_in_progress = false;
+/**
+ * Run the model training
+ */
+function trainModel() {
+    $("#statusfooter").show();
+    $("#progressbar").show();
+    if (training_in_progress == false) {
+        if (currentPlatform == platforms.WINDOWS){
+            const ls = spawn(__dirname+DS+'run-modeling.bat', 
+                [__dirname+DS+"modeling", 3,1,25,__dirname+DS+json_config.training_input, __dirname+DS+json_config.training_output, __dirname+DS+json_config.training_features], {
+                shell: true
+            });
+            training_in_progress = true;
+            $("#trainbutton").html('<i class="fas fa-circle-notch fa-spin"></i> Training in progress..');  
+            ls.stdout.on('data', (data) => {
+                logmsg(`${data}`);
+                setProgress(`${data}`);
+            });
+    
+            ls.stderr.on('data', (data) => {
+                logmsg(`${data}`);
+                setProgress(`${data}`);
+            });
+    
+            ls.on('close', (code) => {
+                logmsg(`Done`);
+                training_in_progress = false;
+                $("#progressbar").fadeOut(500);
+                $("#trainbutton").html('(Re)start model training');
+            });
+        } else {
+            const ls = spawn('sh', ['./app/run-modeling.sh', 
+                3,1,25,__dirname+DS+json_config.training_input, __dirname+DS+json_config.training_output, __dirname+DS+json_config.training_features], {
+                shell: true
+            });
+            training_in_progress = true;
+            $("#trainbutton").html('<i class="fas fa-circle-notch fa-spin"></i> Training in progress..');
+    
+            ls.stdout.on('data', (data) => {
+                logmsg(`${data}`);
+                setProgress(`${data}`);
+            });
+    
+            ls.stderr.on('data', (data) => {
+                logmsg(`${data}`);
+                setProgress(`${data}`);
+            });
+    
+            ls.on('close', (code) => {
+                logmsg(`Done`);
+                training_in_progress = false;
+                $("#progressbar").fadeOut(500);
+                $("#trainbutton").html('(Re)start model training');
+            });
+        }
+        
+    } else {
+        dialogs.alert('Model still training.', function(ok) {
             console.log('alert', ok)
         });
     }

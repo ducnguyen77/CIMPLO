@@ -3,5 +3,8 @@
 	"visualisation":"../../sample_datasets/KLM/KLM_visualize.html",
     "optimization":"yes",
     "optimization_config":"../../sample_datasets/20car2ws",
-    "optimization_output":"../../sample_datasets/20car2ws"
+    "optimization_output":"../../sample_datasets/20car2ws",
+    "training_input": "../../sample_data_modeling/CMAPSS_1",
+    "training_features": "../../sample_data_modeling/CMAPSS_1/features_list25_rep_1.pkl",
+    "training_output": "output"
 }
