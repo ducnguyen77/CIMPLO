@@ -8,3 +8,6 @@ schedule/release-builds/Cimplo-darwin-x64/
 schedule/Cimplo-darwin-x64
 
 /modeling/__pycache__/
+/modeling/build/
+
+/modeling/*.txt

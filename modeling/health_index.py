@@ -15,14 +15,12 @@ def construction(model, train, test, features_list):
     """
 
     F_prob_tr = {}
-    # w = 0
     for unit in tqdm(train.unit.unique(), 'Constructing train HI'):
         temp = train[train.unit == unit]
         prob_f = model.predict_proba(temp[features_list])[:, 1]
         F_prob_tr[unit] = pd.DataFrame({'hi': prob_f})
 
     F_prob_te = {}
-    # w = 0
     for unit in tqdm(test.unit.unique(), 'Constructing test HI'):
         temp = test[test.unit == unit]
         prob_f = model.predict_proba(temp[features_list])[:, 1]
