@@ -11,3 +11,11 @@ schedule/Cimplo-darwin-x64
 /modeling/build/
 
 /modeling/*.txt
+modeling/dist/
+modeling/main.spec
+schedule/app/modeling/__pycache__/
+schedule/release-builds/Cimplo-win32-ia32.zip
+schedule/app/output/
+schedule/app/modeling/dist/
+schedule/app/modeling/build/
+schedule/rf_model.joblib

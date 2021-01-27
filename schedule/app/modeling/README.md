@@ -50,6 +50,8 @@ The below example trains from scratch a model using */home/marios/Projects/CIMPL
              hiddenimports=['scipy.special.cython_special', 'sklearn.neighbors._typedefs', 
              'sklearn.utils._cython_blas',   'sklearn.neighbors._quad_tree', 'sklearn.tree._utils'],_..
 
+
+main.exe -W 3 -C 1 -L 25 -P "J:\repos\CimploGithub\sample_data_modeling\CMAPSS_1" -OUT J:\repos\CimploGithub\modeling\output -D unit -D cycles -F J:\repos\CimploGithub
    
 
 # Requirements
