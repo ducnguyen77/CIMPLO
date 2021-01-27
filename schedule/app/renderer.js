@@ -4,6 +4,7 @@ window.$ = window.jQuery = require('jquery')
 window.Tether = require('tether')
 window.Bootstrap = require('bootstrap')
 window.Dialogs = require('dialogs')
+window.fs = require('fs')
 const {spawn} = require('child_process');
 const { platform } = require('os')
 const {dialog} = require('electron').remote;
@@ -16,6 +17,7 @@ var dialogs = Dialogs();
 var optimization_config = '';
 
 var json_config = '';
+var distribution_plots = [];
 
 function init() {
     //load the scatter data
@@ -90,8 +92,12 @@ function init() {
     }, 1000 * 60);
 
     gantt.init("gantt_here");
-
     setTimeout(function(){ reload(); }, 1000);
+
+    $( "#selectplot" ).on("change", function() {
+        console.log($( "#selectplot" ).val());
+        $("#plot").prop("src", __dirname+DS+json_config.training_output + DS+ $( "#selectplot" ).val())
+    });
 }
 
 window.onresize = function(event) {
@@ -214,6 +220,7 @@ function reload() {
             $(".analysis-menu").hide();
         }
         json_config = json;
+        loadPlots();
         if (json.optimization == "yes"){
             optimization_config = json.optimization_config;
             gantt.load(json.optimization_output +DS +"data" + loaded_data_id + ".json");
@@ -375,16 +382,43 @@ function logmsg(message) {
     }
 }
 var training_in_progress = false;
+
+function loadPlots(){
+    fs.readdir(__dirname+DS+json_config.training_output, (err, dir) => {
+        distribution_plots = [];
+        console.log(__dirname+DS+json_config.training_output);
+        $("#selectplot").html(''); //clear
+        $("#selectplot").append( '<option value="">-- Select a distribution to plot --</option>');
+        if (dir){
+            for (var i = 0, path; path = dir[i]; i++) {
+                distribution_plots.push(path);
+                $("#selectplot").append( '<option value="'+path+'">'+path+'</option>');
+            }
+        }
+    });
+}
 /**
  * Run the model training
  */
 function trainModel() {
     $("#statusfooter").show();
     $("#progressbar").show();
+    var lookback = $("#lookback").val();
+    var workshops = $("#workshops").val();
+    var components = $("#components").val();
+    if (!lookback){
+        lookback = 25;
+    } 
+    if (!workshops){
+        workshops = 3;
+    } 
+    if (!components){
+        components = 1;
+    }
     if (training_in_progress == false) {
         if (currentPlatform == platforms.WINDOWS){
             const ls = spawn(__dirname+DS+'run-modeling.bat', 
-                [__dirname+DS+"modeling", 3,1,25,__dirname+DS+json_config.training_input, __dirname+DS+json_config.training_output, __dirname+DS+json_config.training_features], {
+                [__dirname+DS+"modeling", workshops, components, lookback,__dirname+DS+json_config.training_input, __dirname+DS+json_config.training_output, __dirname+DS+json_config.training_features], {
                 shell: true
             });
             training_in_progress = true;
@@ -407,7 +441,7 @@ function trainModel() {
             });
         } else {
             const ls = spawn('sh', ['./app/run-modeling.sh', 
-                3,1,25,__dirname+DS+json_config.training_input, __dirname+DS+json_config.training_output, __dirname+DS+json_config.training_features], {
+                workshops, components, lookback, __dirname+DS+json_config.training_input, __dirname+DS+json_config.training_output, __dirname+DS+json_config.training_features], {
                 shell: true
             });
             training_in_progress = true;
