@@ -19,3 +19,5 @@ schedule/app/output/
 schedule/app/modeling/dist/
 schedule/app/modeling/build/
 schedule/rf_model.joblib
+
+./sample_datasets/KLM/ # the KLM file. Removed for data protection reasons

@@ -1,7 +1,0 @@
-{
-	"project":"KLM",
-	"visualisation":"KLM_visualize.html",
-	"optimization":"no",
-	"serverScript":"start.sh",
-	"serverOutput":"http://localhost:5006/CIMPLO_sensor_viz"
-}
