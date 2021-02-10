@@ -11,3 +11,5 @@ schedule/Cimplo-darwin-x64
 /modeling/build/
 
 /modeling/*.txt
+
+sample_datasets/KLM/
